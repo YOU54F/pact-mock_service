@@ -9,27 +9,22 @@ module Pact
     PACT_DIR = 'tmp/pacts'
 
     def start_server port, options = '', wait = true
-      pid = fork do
-        exec "bundle exec bin/pact-mock-service --consumer Consumer --provider Provider --port #{port} --host 0.0.0.0 --log tmp/integration.log --pact-dir tmp/pacts #{options}"
-      end
-
+      pid = spawn "bundle exec bin/pact-mock-service --consumer Consumer --provider Provider --port #{port} --host 0.0.0.0 --log tmp/integration.log --pact-dir tmp/pacts #{options}"
+ 
       wait_until_server_started(port, /--ssl/ === options) if wait
       pid
     end
 
     def start_stub_server port, pact_file_path, options = '', wait = true
-      pid = fork do
-        exec "bundle exec bin/pact-stub-service #{pact_file_path}  --port #{port} --host 0.0.0.0 --log tmp/integration.log #{options}"
-      end
+      pid = spwan "bundle exec bin/pact-stub-service #{pact_file_path}  --port #{port} --host 0.0.0.0 --log tmp/integration.log #{options}"
 
       wait_until_server_started(port, /--ssl/ === options) if wait
       pid
     end
 
     def start_control port, options = ''
-      pid = fork do
-        exec "bundle exec bin/pact-mock-service control --port #{port} --log-dir tmp/log --pact-dir tmp/pacts #{options}"
-      end
+      pid = spawn "bundle exec bin/pact-mock-service control --port #{port} --log-dir tmp/log --pact-dir tmp/pacts #{options}"
+
       wait_until_server_started port
       pid
     end
