@@ -16,7 +16,7 @@ module Pact
     end
 
     def start_stub_server port, pact_file_path, options = '', wait = true
-      pid = spwan "bundle exec bin/pact-stub-service #{pact_file_path}  --port #{port} --host 0.0.0.0 --log tmp/integration.log #{options}"
+      pid = spawn "bundle exec bin/pact-stub-service #{pact_file_path}  --port #{port} --host 0.0.0.0 --log tmp/integration.log #{options}"
 
       wait_until_server_started(port, /--ssl/ === options) if wait
       pid
